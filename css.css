@@ -13,6 +13,7 @@
     margin: 20px;
 }
 
+/* Displayed with flex end so text appears at bottom and moves up */
 #display {
     width: auto;
     height: 70vh;
