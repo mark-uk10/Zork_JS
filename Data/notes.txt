@@ -1,0 +1,13 @@
+NOTE 1 ----- right now Iam happy with any words not in the commands list being classed as words it does not know and applying them as such.  Zork has levels of redundency for example 
+    look at mailboxxxxxxxx or any random letters/string/or numbers
+works fine
+    look at mailbo
+also works fine
+    look at mailb
+this does not work
+
+This would be a nice furure development for this game to do.
+
+NOTE 2 ---- Is there not a better way to do this ?
+
+NOTE 3 ---- this will not work as a foreach look ??
