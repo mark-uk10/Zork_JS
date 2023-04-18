@@ -1,30 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="app.js" defer></script>
+<head>
+    <meta charset="UTF-8">
     <title>Document</title>
-  </head>
-  <body>
-    <main>
-      <div class="locationContainer"></dcciv>
-      <div class="scoreContainer"></div>
-      <div class="playArea">
-        <div class="displayArea"></div>
-        <form class="inputArea" onsubmit="return false">
-          <label for="userInput">></label>
-          <input
-            type="text"
-            id="userInput"
-            name="userInput"
-            autocomplete="off"
-            autofocus="on"
-            maxlength="77"
-          />
-        </form>
-      </div>
-    </main>
-  </body>
+    <script src="app.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,600&display=swap" rel="stylesheet">
+</head>
+
+<main id="container">
+<body>
+  <div id="infoContainer">
+    <div class="info"><p>location</p></div>
+    <div class="info"><p>score</p></div>
+  </div>
+  <div id="display">
+      
+    <p class="userInput" id="startText">Hi welcome to the test place you can move around to different rooms (just say a direction), you can also look at the room(say look), you can look at objects in the room(look at ). you can pick up objects say (get object) say (inv) for inventory</p>
+    </div>
+    <form onsubmit="return false">
+        <label for="input" id="startCharacter">&#62;</label>
+        <input type="text" id="input" autofocus maxlength="40" autocomplete="off" autocorrect="off" spellcheck="false" >
+    </form>
+</body>
+</main>
 </html>
