@@ -1,6 +1,7 @@
 
   import { evaluateInput } from "./parserEngine";
   import { tell } from "./tell.js";
+  import { perform } from "./perform";
   
     const startPlay = () => {
     const inputElement = document.querySelector("#input");
@@ -9,7 +10,10 @@
       if (event.key === "Enter") {
         const userInput = inputElement.value;
         tell(`>${userInput}`, "pre");
-        evaluateInput(userInput);
+        const testSyntax = evaluateInput(userInput)
+        if (testSyntax.verb != "stop"){
+          perform(testSyntax.prso,testSyntax.prsa,testSyntax.prsi,testSyntax.verb)
+        }
         inputElement.value = "";
       }
     });

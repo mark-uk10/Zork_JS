@@ -1,11 +1,6 @@
 import { tell } from "./tell.js";
-import { syntax } from "./syntax.js";
-import { collectVerbs } from './syntax.js';
-
-
-const objects = {
-  words: ["water","bottle"]
-}
+import { syntax, collectVerbs } from "./syntax.js";
+import { objectWords} from "./dungeon";
 
 const checkWords = function(verbs,input){
   inputArray = input.split(" ")
@@ -33,6 +28,7 @@ const checkSyntax = function(syntax, input) {
   let result = false;
   let functionReference = "";
   let isMatchFound = false;
+  let verb;
   
   syntax.some(element => {
     for (const key in element) {
@@ -41,9 +37,10 @@ const checkSyntax = function(syntax, input) {
           const value = element[key][nestedKey];
           if (typeof value !== 'string' && typeof value !== 'function') {
             const test = value.exec(userInputNoSpace);
+
             if (test) {
-              const name = value[key];
               functionReference = element[key].f_reference;
+              verb = nestedKey;
               result = test;
               isMatchFound = true;
               return true; // stop iterating over the syntax array
@@ -57,6 +54,7 @@ const checkSyntax = function(syntax, input) {
   
   return {
     object: result,
+    verb: verb,
     f_reference: functionReference,
     isMatchFound: isMatchFound // indicate whether a match was found or not
   };
@@ -66,25 +64,26 @@ const evaluateInput = function (input) {
 
     let PRSA  //verb
     let PRSO 
-    let PRSI 
+    let PRSI
+    let go = true;
     let userInput = input.trim().toLowerCase();
     const unknownWords = checkWords(collectVerbs(),userInput)
     const correctSyntax = checkSyntax(syntax,userInput)
-    const correctObject = checkObject(correctSyntax.object,objects.words)
-    console.log(correctSyntax)
-    console.log(correctObject)
+    const correctObject = checkObject(correctSyntax.object,objectWords)
 
     if(!userInput){
       tell("I beg your pardon?")
+      go = false;
     }
     else if(unknownWords.length>0){
       tell(`I don't know the word ${unknownWords[0]}`)
+      go = false;
     }
     else if(correctSyntax.isMatchFound == true){
       PRSA = correctSyntax.f_reference
-      console.log(PRSA)
       if (correctObject.object == false || correctObject.indirectObject == false){
-        console.log("dont know")
+        tell(`I don't understand that sentence`)
+        go = false;
       }
       if (correctObject.object == true){
         PRSO = correctSyntax.object.groups.object
@@ -92,11 +91,19 @@ const evaluateInput = function (input) {
       if (correctObject.indirectObject == true){
         PRSI = correctSyntax.object.groups.indirectObject
       }
-        
-        console.log(PRSO)
-        console.log(PRSI)
-      
     }
+
+    if (go)
+      return {
+        verb:correctSyntax.verb,
+        prso:PRSO,
+        prsi:PRSI,
+        prsa:PRSA,
+      }
+    else
+      return{
+        verb:"stop"
+      }
   };
 
   export{evaluateInput}

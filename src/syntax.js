@@ -11,7 +11,7 @@ const movement ={
     words: ["n","e","s","w","north","east","south","west","up","down"]
 }
 
-const testObjects = {
+const objects = {
     words: ["water","bottle"]
   }
 
@@ -20,9 +20,18 @@ const reg = function(expression){
 }
 
 const collectVerbs = () =>
-    new Set([...synonym.words,...preposition.words,...movement.words,...testObjects.words]);
+    new Set([...synonym.words,...preposition.words,...movement.words,...objects.words]);
   
 const syntax = [
+    {
+        traversalSyntax:{
+            north: reg(`(north|n)`),
+            east: reg(`(east|e)`),
+            south: reg(`(south|s)`),
+            west: reg(`(west|w)`),
+            f_reference: "f_traversal"
+        }
+    },
     {
         lookSyntax:{ 
             look: reg(`look`),
