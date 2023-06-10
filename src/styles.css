@@ -3,12 +3,30 @@
     border: 0;
     padding: 0;
     font-family: 'IBM Plex Mono', monospace;
-    user-select: none;
+    /* user-select: none; */
 }
 
 html {
     color: #fff;
     font-size: 15px;
+}
+
+h1 {
+    font-size: 15px;
+    margin-left: 20px;
+    color: red;
+}
+
+h2 {
+    font-size: 15px;
+    margin-left: 40px;
+    color: green;
+}
+
+h3 {
+    font-size: 15px;
+    margin-left: 60px;
+    color: rgb(183, 9, 183);
 }
 
 #container {
@@ -55,7 +73,7 @@ html {
     outline: none;
     resize: none;
     overflow: hidden;
-    user-select: none;
+    /* user-select: none; */
     display: flex;
     justify-content: flex-end;
     flex-direction: column;

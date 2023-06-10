@@ -1,5 +1,6 @@
 import { room,object,traversal } from "./actions.js";
 
+
 //user object
 const user = {
     location:"kitchen"
@@ -12,31 +13,56 @@ const objects = new Map()
 objects.set('water',{
     name:"water",
     location:"bottle",
-    desc:"water",
+    desc:"quantity of water",
+    flags:["tryTakeBit","drinkBit","takeBit"]
 })
 objects.set('bottle',{
     name:"bottle",
-    location:"kitchen",
-    desc:"bottle",
+    location:"bag",
+    desc:"glass bottle",
     fDesc:"A bottle is sitting on the table",
-    flags:["takeBit"]
+    lDesc:"A glass bottle is here",
+    flags:["takeBit","transBit","contBit","touchBit"]
 })
 objects.set('lunch',{
     name:"lunch",
     location:"bag",
+    lDesc:"A hot pepper sandwich is here",
     desc:"lunch",
+    flags:["takeBit","foodBit"]
+})
+objects.set('garlic',{
+    name:"garlic",
+    location:"bag",
+    desc:"clove of garlic",
+    flags:["takeBit","foodBit"]
+})
+objects.set('table',{
+    name:"table",
+    location:"kitchen",
+    desc:"kitchen table",
+    objRoutine: (objectsLevel1) => object.f_table(objectsLevel1),
+    flags:["noDescBit","contBit","openBit","surfaceBit"]
 })
 objects.set('bag',{
     name:"bag",
-    location:"kitchen",
+    location:"table",
     fDesc:"on the table is an elongated brown sack smelling of hot peppers",
-    lDesc:"a sack is lying on the ground",
-    desc:"sack",
-    flags:["takeBit"]
+    desc:"brown sack",
+    flags:["takeBit","contBit","burnBit","touchBit","openBit"]
 })
 objects.set('picture',{
     name:"picture",
     location:"corridor",
+    desc:"picture",
+    fDesc:"A picture of an old man is sitting on the table",
+    lDesc:"The picture of the old man is lying on the floor",
+    flags:[]
+})
+objects.set('door',{
+    name:"door",
+    location:"corridor",
+    flags:["doorBit","lockedBit","noDescBit"]
 })
 
 export const objectWords = Array.from(objects.keys());
@@ -59,10 +85,9 @@ rooms.set('kitchen',{
 });
 rooms.set('corridor',{
     name:"corridor",
-    lDesc:"this is a corridor it is exciting yes?",
     desc:"corridor",
-    //south: traversal.conditional('kitchen'),
-    flags: ["landBit","onBit"]
+    flags: ["landBit","onBit"],
+    roomRoutine: (txt, objects) => room.f_corridor(txt, objects)
 });
 
 export{rooms,objects,user}
