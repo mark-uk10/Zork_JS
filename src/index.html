@@ -1,26 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Document</title>
     <script src="app.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,600&display=swap" rel="stylesheet">
-</head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-<main id="container">
-<body>
-  <div id="infoContainer">
-    <div class="info"><p>location</p></div>
-    <div class="info"><p>score</p></div>
-  </div>
-  <div id="display">
-      
-    <p class="userInput" id="startText">Hi welcome to the test place you can move around to different rooms (just say a direction), you can also look at the room(say look), you can look at objects in the room(look at ). you can pick up objects say (get object) say (inv) for inventory</p>
-    </div>
-    <form onsubmit="return false">
+  <main id="container">
+    <body>
+      <div id="infoContainer">
+        <div class="info"><p>location</p></div>
+        <div class="info"><p>score</p></div>
+      </div>
+      <div id="display">
+        <p class="userInput" id="startText">
+          Hi welcome to the test place you can move around to different rooms
+          (just say a direction), you can also look at the room(say look), you
+          can look at objects in the room(look at ). you can pick up objects say
+          (get object) say (inv) for inventory
+        </p>
+      </div>
+      <form onsubmit="return false">
         <label for="input" id="startCharacter">&#62;</label>
-        <input type="text" id="input" autofocus maxlength="40" autocomplete="off" autocorrect="off" spellcheck="false" >
-    </form>
-</body>
-</main>
+        <input
+          type="text"
+          id="input"
+          autofocus
+          maxlength="40"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+        />
+      </form>
+    </body>
+  </main>
 </html>

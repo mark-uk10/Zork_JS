@@ -1,35 +1,95 @@
 import { verbRoutines } from "./verbs";
-import { objects,rooms,user} from "./dungeon";
+import { objects, rooms, user } from "./dungeon";
+import { sortObjects } from "./parserEngine";
 
+const perform = function (
+  object,
+  indObject,
+  reference,
+  verb,
+  input,
+  levels,
+  finalLocation
+) {
+  const objectDef = object;
+  const indObjectDef = indObject;
+  const location = rooms.get(`${user.get("location")}`);
+  const verbRoutine = verbRoutines.get(`${reference}`);
 
-const perform = function(object,reference,indObject,verb){
-
-   const objectDef = objects.get(`${object}`)
-   const indObjectDef = objects.get(`${indObject}`)
-   const location = rooms.get(`${user.location}`)
-   const verbRoutine = verbRoutines.get(`${reference}`)
-
-   function getObjectsInLocation(location) {
-    const roomObjects = Array.from(objects.values()).filter(object => object.location === location);
-    const objectsLevel1 = Array.from(objects.values()).filter(object => roomObjects.some(roomObject => roomObject.name === object.location));
-    const objectsLevel2 = Array.from(objects.values()).filter(object => objectsLevel1.some(level1Object => level1Object.name === object.location));
-    const objectsLevel3 = Array.from(objects.values()).filter(object => objectsLevel2.some(level2Object => level2Object.name === object.location));
-
-    return {
-        roomObjects: roomObjects,
-        objectsLevel1: objectsLevel1,
-        objectsLevel2: objectsLevel2,
-        objectsLevel3: objectsLevel3,
+  if (reference === "f_look") verbRoutine.look(location, levels);
+  if (reference === "f_save") verbRoutine.save(objects);
+  if (reference === "f_load") verbRoutine.load(objects);
+  if (reference === "f_examine") verbRoutine.examine(objectDef, levels);
+  if (reference === "f_move") verbRoutine.move(objectDef, objects);
+  if (reference === "f_inventory") verbRoutine.inventory(levels.invObjects);
+  if (reference === `f_verbosity`) {
+    if (verb === "verbose") verbRoutine.verbose();
+    else if (verb === "brief") verbRoutine.brief();
+    else verbRoutine.superBrief();
+  }
+  if (reference === "f_take")
+    verbRoutine.preTake(objectDef, objects.get(`${objectDef.location}`));
+  if (reference === "f_drop") {
+    verbRoutine.preDrop({
+      obj: objectDef,
+      loc: objects.get(`${objectDef.location}`),
+      finalLoc: finalLocation,
+      userLoc: user.get("location"),
+    });
+  }
+  if (reference === "f_back") {
+    verbRoutine.back();
+  }
+  if (reference === "f_blast") {
+    verbRoutine.blast(objectDef);
+  }
+  if (reference === "f_brush") {
+    verbRoutine.brush(objectDef, indObjectDef);
+  }
+  if (reference === "f_bug") {
+    verbRoutine.bug();
+  }
+  if (reference === "f_chomp") {
+    verbRoutine.chomp();
+  }
+  if (reference === "f_follow") {
+    verbRoutine.follow();
+  }
+  if (reference === "f_frobozz") {
+    verbRoutine.frobozz();
+  }
+  if (reference === "f_hatch") {
+    verbRoutine.hatch();
+  }
+  if (reference === "f_lookUnder") {
+    verbRoutine.lookUnder();
+  }
+  if (reference === "f_make") {
+    verbRoutine.make();
+  }
+  if (reference === "f_plug") {
+    verbRoutine.plug();
+  }
+  if (reference === "f_open") {
+    verbRoutine.open(objectDef, levels.combinedObjects);
+  }
+  if (reference === "f_traversal") {
+    function getDirection(verb) {
+      const directions = ["north", "east", "south", "west", "down", "up"];
+      if (directions.includes(verb)) return verb;
+      else return false;
     }
-}
 
-const allObjects = getObjectsInLocation(location.name);
+    const direction = getDirection(verb);
+    const canMove = verbRoutine.tryMove(direction, location);
 
+    if (canMove) {
+      const newLocationName = verbRoutine.moveAndLook(canMove);
+      const newLocation = rooms.get(newLocationName);
+      const newObjects = sortObjects(newLocation);
+      verbRoutines.get("f_look").firstLook(newLocation, newObjects);
+    }
+  }
+};
 
-   if (reference === "f_look")
-    verbRoutine(location,allObjects)
-
-
-}
-
-export{perform}
+export { perform };
