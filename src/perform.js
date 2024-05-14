@@ -73,6 +73,9 @@ const perform = function (
   if (reference === "f_open") {
     verbRoutine.open(objectDef, levels.combinedObjects);
   }
+  if (reference === "f_close") {
+    verbRoutine.close(objectDef);
+  }
   if (reference === "f_traversal") {
     function getDirection(verb) {
       const directions = ["north", "east", "south", "west", "down", "up"];

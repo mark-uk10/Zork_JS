@@ -1,5 +1,5 @@
 import { tell } from "./tell";
-import { Global, fSet, fIsSet, pickOne } from "./globals";
+import { Global, fSet, fIsSet, pickOne, fClear } from "./globals";
 import { user } from "./dungeon";
 
 const yuks = [
@@ -176,6 +176,31 @@ verbRoutines.set("f_save", {
           fSet(object, "touchBit");
         }
       } else tell(`You must tell me how to do that to a ${object.desc}`);
+    },
+  }),
+  verbRoutines.set("f_close", {
+    close: function (object) {
+      if (
+        !fIsSet(object.flags, "contBit") &&
+        !fIsSet(object.flags, "doorBit")
+      ) {
+        tell(`You must tell me how to do that to a ${object.name}`);
+      } else {
+        if (!fIsSet(object.flags, "surfaceBit")) {
+          if (object.hasOwnProperty("capacity") != 0) {
+            if (fIsSet(object.flags, "openBit")) {
+              fClear(object, "openBit");
+              tell("Closed.");
+            } else tell("It is already closed.");
+          } else tell("You cannot close that.");
+          if (fIsSet(object.flags, "doorBit")) {
+            if (fIsSet(object.flags, "openBit")) {
+              fClear(object, "openBit");
+              tell(`The ${object.name} is now closed.`);
+            } else tell("It is already closed.");
+          }
+        } else tell("You cannot close that.");
+      }
     },
   }),
   verbRoutines.set("f_plug", {

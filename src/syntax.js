@@ -10,6 +10,7 @@ const words = {
   chomp: "(chomp|lose|barf)",
   follow: "(follow|persue|chase|come)",
   plug: "(plug|glue|patch|repair|fix)",
+  close: "(close|shut)",
   prepositions: [
     "the",
     "at",
@@ -145,6 +146,13 @@ const syntax = [
       waiting: reg(`open`),
       open: reg(`open(up)?(the)?(?<object>.*)`),
       f_reference: "f_open",
+    },
+  },
+  {
+    closeSyntax: {
+      waiting: reg(`close`),
+      close: reg(`${words.close}(the)?(?<object>.*)`),
+      f_reference: "f_close",
     },
   },
   {
