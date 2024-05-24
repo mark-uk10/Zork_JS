@@ -1,5 +1,5 @@
 import { tell } from "./tell";
-import { Global, fSet, fIsSet, pickOne, fClear } from "./globals";
+import { Global, fSet, fIsSet, pickOne, fClear, isInInv } from "./globals";
 import { user } from "./dungeon";
 
 const yuks = [

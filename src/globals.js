@@ -12,6 +12,9 @@ function fIsSet(object, flagToCheck) {
     return object.flags.includes(flagToCheck);
   }
 }
+function isInInv(itemName) {
+  return items.some((item) => item.name === itemName);
+}
 
 function setG(thing, bool) {
   Global[thing] = bool;
@@ -80,4 +83,5 @@ export {
   multiObject,
   waiting,
   pickOne,
+  isInInv,
 };

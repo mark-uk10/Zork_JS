@@ -319,6 +319,4 @@ const collectWords = () => {
 
 const verbs = words.getVerbs(syntax);
 
-console.log(collectWords());
-
 export { syntax, collectWords, verbs };
