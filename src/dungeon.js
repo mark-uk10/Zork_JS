@@ -6,6 +6,13 @@ user.set("location", "kitchen");
 
 const objects = new Map();
 
+objects.set("global_water", {
+  name: "water",
+  synonym: ["water", "river water"],
+  location: ["forest"],
+  desc: "water",
+  flags: ["drinkBit", "noDescBit"],
+});
 objects.set("water", {
   name: "water",
   location: "bottle",
@@ -22,7 +29,7 @@ objects.set("bag", {
 });
 objects.set("bottle", {
   name: "bottle",
-  location: "inv",
+  location: "table",
   desc: "glass bottle",
   fDesc: "A bottle is sitting on the table",
   lDesc: "A clear glass bottle is here",
@@ -122,12 +129,7 @@ rooms.set("kitchen", {
   east: traversal.neverExit(
     "you can never go this way and this is a text that makes it more interesting"
   ),
-  south: traversal.conditional(
-    getGFlags("kitchen", "LOWTIDE"),
-    "corridor",
-    user,
-    "you would drown"
-  ),
+  south: traversal.unconditional("forest", user),
   flags: ["landBit", "onBit"],
 });
 rooms.set("corridor", {
@@ -137,6 +139,15 @@ rooms.set("corridor", {
   north: traversal.doorExit("livingroom", user, objects.get("woodendoor")),
   south: traversal.unconditional("kitchen", user),
   roomRoutine: (txt, objects) => room.f_corridor(txt, objects),
+});
+rooms.set("forest", {
+  name: "forest",
+  desc: "Forest",
+  lDesc:
+    "This is a forest, with trees in all directions. A shallow river flows to the south. To the north, there appears to be an entrance to a house.",
+  flags: ["landBit", "onBit"],
+  north: traversal.unconditional("kitchen", user),
+  up: traversal.neverExit("There is no tree here suitable for climbing."),
 });
 rooms.set("livingroom", {
   name: "livingroom",
