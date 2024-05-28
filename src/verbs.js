@@ -208,6 +208,34 @@ verbRoutines.set("f_save", {
       tell("This has no effect.");
     },
   }),
+  verbRoutines.set("f_drink", {
+    drink: function (obj, invObjects) {
+      verbRoutines.get("f_eat").eat(obj, invObjects, true);
+    },
+  }),
+  verbRoutines.set("f_eat", {
+    eat: function (obj, invObjects, verbDrink) {
+      let food = fIsSet(obj.flags, "foodBit");
+      let drink = fIsSet(obj.flags, "drinkBit");
+      if (!food && !drink) {
+        tell(`I don't think that the ${obj.desc} would agree with you.`);
+      }
+      if (food) {
+        if (!isInInv(obj.name, invObjects)) {
+          tell(`You're not holding that`);
+        } else if (verbDrink) {
+          tell(`How can you drink that?`);
+        } else {
+          tell(`Thank you very much. It really hit the spot.`);
+          obj.location = "false";
+        }
+      } else if (drink) {
+        //if global water here then drink water
+        // if water is visible and not in iventory say you must be holding the container obj first
+        // if water in inventory but in closed object say you need to open container obj first
+      }
+    },
+  }),
   verbRoutines.set("f_inventory", {
     inventory: function (objects) {
       if (!objects.combinedInv.length) tell("You are empty-handed.");
@@ -239,6 +267,7 @@ verbRoutines.set("f_save", {
     },
     iDrop: function (context) {
       const { obj, loc, finalLoc, userLoc } = context;
+      console.log(context);
       if (finalLoc !== "inv") {
         tell(`You're not carrying the ${obj.desc}`);
         return false;

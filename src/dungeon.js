@@ -5,14 +5,16 @@ const user = new Map();
 user.set("location", "kitchen");
 
 const objects = new Map();
+const localGlobals = new Map();
 
-objects.set("global_water", {
+localGlobals.set("water", {
   name: "water",
-  synonym: ["water", "river water"],
-  location: ["forest"],
-  desc: "water",
-  flags: ["drinkBit", "noDescBit"],
+  location: "localGlobals",
+  synonym: ["water", "quantity"],
+  desc: "global water",
+  flags: ["tryTakeBit", "drinkBit", "takeBit"],
 });
+
 objects.set("water", {
   name: "water",
   location: "bottle",
@@ -29,7 +31,7 @@ objects.set("bag", {
 });
 objects.set("bottle", {
   name: "bottle",
-  location: "table",
+  location: "inv",
   desc: "glass bottle",
   fDesc: "A bottle is sitting on the table",
   lDesc: "A clear glass bottle is here",
@@ -148,6 +150,7 @@ rooms.set("forest", {
   flags: ["landBit", "onBit"],
   north: traversal.unconditional("kitchen", user),
   up: traversal.neverExit("There is no tree here suitable for climbing."),
+  globals: [localGlobals.get("water")],
 });
 rooms.set("livingroom", {
   name: "livingroom",
@@ -168,4 +171,4 @@ rooms.set("cellar", {
 
 const roomWords = Array.from(rooms.keys());
 
-export { rooms, objects, user, objectWords, roomWords };
+export { rooms, objects, localGlobals, user, objectWords, roomWords };

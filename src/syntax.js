@@ -11,6 +11,8 @@ const words = {
   follow: "(follow|persue|chase|come)",
   plug: "(plug|glue|patch|repair|fix)",
   close: "(close|shut)",
+  eat: "(eat|consume|taste|bite)",
+  drink: "(drink|swallow|imbibe)",
   prepositions: [
     "the",
     "at",
@@ -57,6 +59,8 @@ const words = {
     const chompSynonyms = collectWords(this.chomp);
     const follow = collectWords(this.follow);
     const plug = collectWords(this.plug);
+    const eat = collectWords(this.eat);
+    const drink = collectWords(this.drink);
     return [
       ...lookSynonyms,
       ...pourSynonyms,
@@ -67,6 +71,7 @@ const words = {
       ...chompSynonyms,
       ...follow,
       ...plug,
+      ...eat,
     ];
   },
   getVerbs(syntax) {
@@ -139,6 +144,20 @@ const syntax = [
       waiting: reg(`${words.takeSynonym}(the)?`),
       take: reg(`${words.takeSynonym}(the)?(?<object>.*)`),
       f_reference: "f_take",
+    },
+  },
+  {
+    eatSyntax: {
+      waiting: reg(`${words.eat}(the)?`),
+      eat: reg(`${words.eat}(the)?(?<object>.*)`),
+      f_reference: "f_eat",
+    },
+  },
+  {
+    drinkSyntax: {
+      waiting: reg(`${words.drink}(the)?`),
+      drink: reg(`${words.drink}(the)?(?<object>.*)`),
+      f_reference: "f_drink",
     },
   },
   {

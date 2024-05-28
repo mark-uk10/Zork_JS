@@ -1,6 +1,6 @@
 import { tell } from "./tell.js";
 import { syntax, collectWords } from "./syntax.js";
-import { objectWords, objects, rooms, user } from "./dungeon";
+import { objectWords, objects, localGlobals, rooms, user } from "./dungeon";
 import { countMoves } from "./gClock";
 import { globalObjects } from "./globals";
 
@@ -9,6 +9,9 @@ sortObjects = function (location) {
   const getObjectsInLocation = function () {
     for (const object of objects.values()) {
       if (object.location.includes(location.name)) roomObjects.push(object);
+    }
+    if (location.hasOwnProperty("globals")) {
+      location.globals.forEach((element) => roomObjects.push(element));
     }
     return roomObjects.concat([...globalObjects.values()]);
   };
@@ -76,42 +79,25 @@ const checkWords = function (verbs, input) {
 };
 
 const objectHere = function (toCheck, objectsHere) {
-  function seeInside(obj) {
-    return (
-      !obj.includes("invisible") &&
-      (obj.includes("transBit") || obj.includes("openBit"))
-    );
-  }
   const objectsArray = [];
-  const visibleObjects = [];
   const canSee = [];
-  let objFinalLocation;
+
   objectsHere.forEach((item) => {
     if (
       item.name === toCheck ||
       (item.synonym && item.synonym.includes(toCheck))
     )
-      objectsArray.push(item.name);
+      objectsArray.push(item);
   });
-  objectsArray.forEach((object) => {
-    objectsHere.forEach((item) => {
-      if (item.name === object && !item.flags.includes("invisible")) {
-        visibleObjects.push(item.name);
-      }
-    });
-  });
-  function canSeeObject(visibleObjects) {
+  function canSeeObject(location) {
     let currentContainedObject;
     let currentContainer;
-
-    visibleObjects.forEach((objName) => {
-      currentContainedObject = objects.get(objName);
+    console.log(objectsArray);
+    objectsArray.forEach((item) => {
+      currentContainedObject = item;
       console.log("Inspecting object:", currentContainedObject);
 
-      while (
-        currentContainedObject &&
-        currentContainedObject.hasOwnProperty("location")
-      ) {
+      while (currentContainedObject.hasOwnProperty("location")) {
         currentContainer = objects.get(currentContainedObject.location);
 
         // Check if the container exists in the objects map
@@ -128,14 +114,15 @@ const objectHere = function (toCheck, objectsHere) {
               currentContainedObject.location
             );
 
-          canSee.push(objName);
-          objFinalLocation = currentContainedObject.location;
-          break;
-        }
+          canSee.push({
+            obj: item,
+            finalLocation: (function () {
+              if (currentContainedObject.location === "localGlobals")
+                return location.name;
+              else return currentContainedObject.location;
+            })(),
+          });
 
-        // Check if the contents of the container are visible
-        if (!seeInside(currentContainer.flags)) {
-          console.log("Cannot see inside:", currentContainer.name);
           break;
         }
 
@@ -147,8 +134,8 @@ const objectHere = function (toCheck, objectsHere) {
   }
 
   // Adjusted to work as an example call
-  canSeeObject(visibleObjects);
-  return { canSee: canSee, objFinalLocation: objFinalLocation };
+  canSeeObject(rooms.get(`${user.get("location")}`));
+  return canSee;
 };
 
 const checkObject = function (noun, objectWords) {
@@ -233,6 +220,7 @@ const evaluateInput = function (input) {
     correctSyntax?.object?.groups?.object,
     locationObject.combinedObjects
   );
+
   console.log(correctSyntax);
   console.log(correctObject);
   console.log(locationObject);
@@ -264,7 +252,7 @@ const evaluateInput = function (input) {
     correctSyntax.object.groups &&
     correctSyntax.object.groups.object.length &&
     correctObject.object &&
-    !hereObject.canSee.length
+    !hereObject.length
   ) {
     tell(`There is no ${correctObject.objectInput} here!`);
   } else if (
@@ -272,18 +260,24 @@ const evaluateInput = function (input) {
     correctSyntax.object.groups &&
     correctSyntax.object.groups.object.length &&
     correctObject.object &&
-    hereObject.canSee.length > 1
+    hereObject.length > 1
   ) {
     tell(
-      `Which ${correctSyntax.object.groups.object} do you mean, the ${hereObject.canSee[0]} or the ${hereObject.canSee[1]}?`
+      `Which ${correctSyntax.object.groups.object} do you mean, the ${hereObject[0].obj.desc} or the ${hereObject[1].obj.desc}?`
     );
   } else {
     //if match found true and only one object exists in location
     PRSA = correctSyntax.f_reference;
-    PRSO = objects.get(correctObject.object);
-    console.log(PRSO);
+    if (rooms.get(`${user.get("location")}`).hasOwnProperty("globals")) {
+      PRSO =
+        localGlobals.get(correctObject.object) ||
+        objects.get(correctObject.object);
+    } else PRSO = objects.get(correctObject.object);
+
     PRSI = objects.get(correctObject.indirectObject);
+    console.log(correctObject.object);
     console.log(PRSI);
+    console.log(PRSO);
     countMoves();
 
     return {

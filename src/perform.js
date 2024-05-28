@@ -29,6 +29,10 @@ const perform = function (
   }
   if (reference === "f_take")
     verbRoutine.preTake(objectDef, objects.get(`${objectDef.location}`));
+  if (reference === "f_eat")
+    verbRoutine.eat(objectDef, levels.invObjects.combinedInv);
+  if (reference === "f_drink")
+    verbRoutine.drink(objectDef, levels.invObjects.combinedInv);
   if (reference === "f_drop") {
     verbRoutine.preDrop({
       obj: objectDef,
