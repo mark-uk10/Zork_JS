@@ -29,6 +29,8 @@ const words = {
     "bug",
     "hatch",
     "under",
+    "global",
+    "wooden",
   ],
   movement: [
     "n",

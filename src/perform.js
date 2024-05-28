@@ -34,10 +34,11 @@ const perform = function (
   if (reference === "f_drink")
     verbRoutine.drink(objectDef, levels.invObjects.combinedInv);
   if (reference === "f_drop") {
+    console.log(finalLocation);
     verbRoutine.preDrop({
       obj: objectDef,
       loc: objects.get(`${objectDef.location}`),
-      finalLoc: finalLocation,
+      finalLoc: finalLocation[0].finalLocation,
       userLoc: user.get("location"),
     });
   }

@@ -7,16 +7,24 @@ user.set("location", "kitchen");
 const objects = new Map();
 const localGlobals = new Map();
 
-localGlobals.set("water", {
-  name: "water",
+localGlobals.set("globalwater", {
+  name: "globalwater",
   location: "localGlobals",
-  synonym: ["water", "quantity"],
+  synonym: ["water"],
   desc: "global water",
   flags: ["tryTakeBit", "drinkBit", "takeBit"],
+});
+localGlobals.set("woodendoor", {
+  name: "woodendoor",
+  synonym: ["door", "wooden", "woodendoor"],
+  desc: "wooden door",
+  location: "corridor",
+  flags: ["doorBit", "noDescBit", "openBit"],
 });
 
 objects.set("water", {
   name: "water",
+  synonym: ["quantity"],
   location: "bottle",
   desc: "quantity of water",
   flags: ["tryTakeBit", "drinkBit", "takeBit"],
@@ -31,7 +39,7 @@ objects.set("bag", {
 });
 objects.set("bottle", {
   name: "bottle",
-  location: "inv",
+  location: "table",
   desc: "glass bottle",
   fDesc: "A bottle is sitting on the table",
   lDesc: "A clear glass bottle is here",
@@ -53,15 +61,9 @@ objects.set("lunch", {
 });
 objects.set("garlic", {
   name: "garlic",
-  location: "inv",
+  location: "bag",
   desc: "clove of garlic",
   flags: ["takeBit", "foodBit"],
-});
-objects.set("watch", {
-  name: "watch",
-  location: "inv",
-  desc: "classic watch",
-  flags: ["takeBit", "readBit", "wearBit"],
 });
 objects.set("leaflet", {
   name: "leaflet",
@@ -83,13 +85,7 @@ objects.set("picture", {
   lDesc: "The picture of the old man is lying on the floor",
   flags: [],
 });
-objects.set("woodendoor", {
-  name: "woodendoor",
-  synonym: ["door", "wooden", "woodendoor"],
-  desc: "wooden door",
-  location: ["corridor", "livingroom"],
-  flags: ["doorBit", "noDescBit", "openBit"],
-});
+
 objects.set("trapdoor", {
   name: "trapdoor",
   synonym: ["trap", "cover", "door", "trap-door", "trapdoor"],
@@ -108,7 +104,7 @@ objects.set("rug", {
 
 const objectWords = {};
 
-[objects, globalObjects].forEach((objectSet) => {
+[objects, globalObjects, localGlobals].forEach((objectSet) => {
   objectSet.forEach((value, key) => {
     const synonyms = value.synonym || [];
     if (!objectWords[key]) {
@@ -138,8 +134,9 @@ rooms.set("corridor", {
   name: "corridor",
   desc: "corridor",
   flags: ["landBit", "onBit"],
-  north: traversal.doorExit("livingroom", user, objects.get("woodendoor")),
+  north: traversal.doorExit("livingroom", user, localGlobals.get("woodendoor")),
   south: traversal.unconditional("kitchen", user),
+  globals: [localGlobals.get("woodendoor")],
   roomRoutine: (txt, objects) => room.f_corridor(txt, objects),
 });
 rooms.set("forest", {
@@ -150,7 +147,7 @@ rooms.set("forest", {
   flags: ["landBit", "onBit"],
   north: traversal.unconditional("kitchen", user),
   up: traversal.neverExit("There is no tree here suitable for climbing."),
-  globals: [localGlobals.get("water")],
+  globals: [localGlobals.get("globalwater")],
 });
 rooms.set("livingroom", {
   name: "livingroom",
@@ -158,6 +155,7 @@ rooms.set("livingroom", {
   south: traversal.unconditional("corridor", user),
   down: traversal.trapDoorExit("cellar", user, objects.get("trapdoor")),
   flags: ["landBit", "onBit"],
+  globals: [localGlobals.get("woodendoor")],
   roomRoutine: (txt, objects) => room.f_livingrooom(txt, objects),
 });
 rooms.set("cellar", {

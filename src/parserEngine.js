@@ -6,6 +6,10 @@ import { globalObjects } from "./globals";
 
 sortObjects = function (location) {
   const roomObjects = [];
+  const combinedObjects = [
+    ...Array.from(localGlobals.values()),
+    ...Array.from(objects.values()),
+  ];
   const getObjectsInLocation = function () {
     for (const object of objects.values()) {
       if (object.location.includes(location.name)) roomObjects.push(object);
@@ -35,8 +39,9 @@ sortObjects = function (location) {
     };
   };
   const setObjectLevels = function () {
-    const objectsLevel1 = Array.from(objects.values()).filter((object) =>
-      roomObjects.some((roomObject) => roomObject.name === object.location)
+    const objectsLevel1 = Array.from(combinedObjects.values()).filter(
+      (object) =>
+        roomObjects.some((roomObject) => roomObject.name === object.location)
     );
     const objectsLevel2 = Array.from(objects.values()).filter((object) =>
       objectsLevel1.some(
@@ -139,6 +144,8 @@ const objectHere = function (toCheck, objectsHere) {
 };
 
 const checkObject = function (noun, objectWords) {
+  console.log(noun);
+  console.log(objectWords);
   let object;
   let indirectObject;
   let objectInput;
@@ -231,6 +238,7 @@ const evaluateInput = function (input) {
   } else if (unknownWord) {
     tell(`I don't know the word ${unknownWord}`);
   } else if (correctSyntax.f_reference === "f_error") {
+    console.log("1");
     tell("I do not undetstand that");
   } else if (correctSyntax.isMatchFound && correctSyntax.verb === "waiting") {
     tell(`What do you want to ${correctSyntax.object[0]}?`);
@@ -246,6 +254,7 @@ const evaluateInput = function (input) {
     correctSyntax.object.groups.object.length &&
     !correctObject.object
   ) {
+    console.log("2");
     tell("I do not undetstand that");
   } else if (
     correctSyntax.isMatchFound &&
@@ -287,7 +296,7 @@ const evaluateInput = function (input) {
       prsi: PRSI,
       prsa: PRSA,
       locationObject: locationObject,
-      finalLocation: hereObject.objFinalLocation,
+      finalLocation: hereObject,
     };
   }
 };

@@ -41,6 +41,7 @@ const traversal = {
   doorExit: function (destination, user, object, text) {
     return function () {
       console.log(destination);
+      console.log(object);
       let textOp = text ? text : `The ${object.desc} is closed`;
       let movePossible = false;
       if (object.flags.includes("openBit")) movePossible = true;
