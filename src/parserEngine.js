@@ -1,5 +1,5 @@
 import { tell } from "./tell.js";
-import { syntax, collectWords } from "./syntax.js";
+import { syntax, dictionary } from "./syntax.js";
 import { objectWords, objects, localGlobals, rooms, user } from "./dungeon";
 import { countMoves } from "./gClock";
 import { globalObjects } from "./globals";
@@ -79,13 +79,27 @@ sortObjects = function (location) {
     combinedObjects: objectLevels.combinedObjects,
   };
 };
-const checkWords = function (verbs, input) {
-  return (wordNotInArray = input.split(" ").find((word) => !verbs.has(word)));
+const checkWords = function (dictionary, input) {
+  const words = new Set([
+    ...dictionary.objects,
+    ...dictionary.rooms,
+    ...dictionary.verbs,
+    ...dictionary.prepositions,
+    ...dictionary.movement,
+  ]);
+  return (wordNotInArray = input.split(" ").find((word) => !words.has(word)));
 };
 
 const objectHere = function (toCheck, objectsHere) {
   const objectsArray = [];
   const canSee = [];
+
+  function seeInside(obj) {
+    return (
+      !obj.includes("invisible") &&
+      (obj.includes("transBit") || obj.includes("openBit"))
+    );
+  }
 
   objectsHere.forEach((item) => {
     if (
@@ -97,7 +111,6 @@ const objectHere = function (toCheck, objectsHere) {
   function canSeeObject(location) {
     let currentContainedObject;
     let currentContainer;
-    console.log(objectsArray);
     objectsArray.forEach((item) => {
       currentContainedObject = item;
       console.log("Inspecting object:", currentContainedObject);
@@ -131,6 +144,12 @@ const objectHere = function (toCheck, objectsHere) {
           break;
         }
 
+        // Check if the contents of the container are visible
+        if (!seeInside(currentContainer.flags)) {
+          console.log("Cannot see inside:", currentContainer.name);
+          break;
+        }
+
         // Log visible container and move deeper if possible
         console.log("Visible container:", currentContainer);
         currentContainedObject = currentContainer; // Move to the next container
@@ -143,27 +162,70 @@ const objectHere = function (toCheck, objectsHere) {
   return canSee;
 };
 
-const checkObject = function (noun, objectWords) {
-  console.log(noun);
-  console.log(objectWords);
+const checkObject = function (noun, objectWords, hereObject) {
   let object;
   let indirectObject;
   let objectInput;
 
+  //see if object found by key is found in room based on search noun
+
+  const objectIsHere = function (hereObject, object) {
+    for (const item of hereObject) {
+      if (item.obj.name === object) {
+        return true;
+      }
+    }
+    return false; // Return false if the object is not found
+  };
+
+  // finds unique item key based on noun
   function findKeyByItem(itemToFind) {
-    for (const key in objectWords) {
-      if (objectWords[key].includes(itemToFind)) {
+    for (const key in objectWords.globalObjects) {
+      if (
+        objectWords.globalObjects[key].includes(itemToFind) &&
+        objectIsHere(hereObject, key)
+      ) {
         return key;
       }
     }
-    return null; // Return null if itemToFind is not found
+    for (const key in objectWords.localGlobals) {
+      if (
+        objectWords.localGlobals[key].includes(itemToFind) &&
+        objectIsHere(hereObject, key)
+      ) {
+        return key;
+      }
+    }
+    for (const key in objectWords.objects) {
+      if (
+        objectWords.objects[key].includes(itemToFind) &&
+        objectIsHere(hereObject, key)
+      ) {
+        return key;
+      }
+    }
+
+    const allObjects = [
+      objectWords.globalObjects,
+      objectWords.localGlobals,
+      objectWords.objects,
+    ];
+
+    for (const obj of allObjects) {
+      for (const key in obj) {
+        if (obj[key].includes(itemToFind)) {
+          return key;
+        }
+      }
+    }
+    return null;
   }
 
+  // adds object and indirect object unique key if exists
   if (noun?.groups?.object) {
     objectInput = noun.groups.object;
     object = findKeyByItem(noun.groups.object);
   }
-
   if (noun?.groups?.indirectObject)
     indirectObject = findKeyByItem(noun.groups.indirectObject);
 
@@ -173,9 +235,6 @@ const checkObject = function (noun, objectWords) {
     objectInput: objectInput,
   };
 
-  if (noun?.groups?.object !== undefined && noun?.groups?.object === object) {
-    result.objectInput = noun.groups.object;
-  }
   return result;
 };
 
@@ -219,13 +278,17 @@ const evaluateInput = function (input) {
   let PRSA, PRSO, PRSI; //verb
   let userInput = input.trim().toLowerCase();
 
-  const unknownWord = checkWords(collectWords(), userInput);
+  const unknownWord = checkWords(dictionary, userInput);
   const correctSyntax = checkSyntax(syntax, userInput);
-  const correctObject = checkObject(correctSyntax.object, objectWords);
   const locationObject = sortObjects(rooms.get(`${user.get("location")}`));
   const hereObject = objectHere(
     correctSyntax?.object?.groups?.object,
     locationObject.combinedObjects
+  );
+  const correctObject = checkObject(
+    correctSyntax.object,
+    objectWords,
+    hereObject
   );
 
   console.log(correctSyntax);
@@ -233,12 +296,15 @@ const evaluateInput = function (input) {
   console.log(locationObject);
   console.log(hereObject);
 
+  const exclusion = function (hereObject) {
+    return hereObject.some((object) => object.obj.name === "globalwater");
+  };
+
   if (!userInput) {
     tell("I beg your pardon?");
   } else if (unknownWord) {
     tell(`I don't know the word ${unknownWord}`);
   } else if (correctSyntax.f_reference === "f_error") {
-    console.log("1");
     tell("I do not undetstand that");
   } else if (correctSyntax.isMatchFound && correctSyntax.verb === "waiting") {
     tell(`What do you want to ${correctSyntax.object[0]}?`);
@@ -254,8 +320,7 @@ const evaluateInput = function (input) {
     correctSyntax.object.groups.object.length &&
     !correctObject.object
   ) {
-    console.log("2");
-    tell("I do not undetstand that");
+    tell("I do not undetstandd that");
   } else if (
     correctSyntax.isMatchFound &&
     correctSyntax.object.groups &&
@@ -269,20 +334,20 @@ const evaluateInput = function (input) {
     correctSyntax.object.groups &&
     correctSyntax.object.groups.object.length &&
     correctObject.object &&
-    hereObject.length > 1
+    hereObject.length > 1 &&
+    !exclusion(hereObject)
   ) {
     tell(
       `Which ${correctSyntax.object.groups.object} do you mean, the ${hereObject[0].obj.desc} or the ${hereObject[1].obj.desc}?`
     );
   } else {
     //if match found true and only one object exists in location
-    PRSA = correctSyntax.f_reference;
-    if (rooms.get(`${user.get("location")}`).hasOwnProperty("globals")) {
-      PRSO =
-        localGlobals.get(correctObject.object) ||
-        objects.get(correctObject.object);
-    } else PRSO = objects.get(correctObject.object);
 
+    PRSA = correctSyntax.f_reference;
+    PRSO =
+      globalObjects.get(correctObject.object) ||
+      localGlobals.get(correctObject.object) ||
+      objects.get(correctObject.object);
     PRSI = objects.get(correctObject.indirectObject);
     console.log(correctObject.object);
     console.log(PRSI);

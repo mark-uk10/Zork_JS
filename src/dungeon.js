@@ -11,14 +11,14 @@ localGlobals.set("globalwater", {
   name: "globalwater",
   location: "localGlobals",
   synonym: ["water"],
-  desc: "global water",
+  desc: "water",
   flags: ["tryTakeBit", "drinkBit", "takeBit"],
 });
 localGlobals.set("woodendoor", {
   name: "woodendoor",
   synonym: ["door", "wooden", "woodendoor"],
   desc: "wooden door",
-  location: "corridor",
+  location: "localGlobals",
   flags: ["doorBit", "noDescBit", "openBit"],
 });
 
@@ -39,7 +39,7 @@ objects.set("bag", {
 });
 objects.set("bottle", {
   name: "bottle",
-  location: "table",
+  location: "inv",
   desc: "glass bottle",
   fDesc: "A bottle is sitting on the table",
   lDesc: "A clear glass bottle is here",
@@ -102,16 +102,46 @@ objects.set("rug", {
   objectRoutine: (txt, item, items) => object.f_rug(txt, item, items),
 });
 
-const objectWords = {};
+//const objectWords = {};
 
-[objects, globalObjects, localGlobals].forEach((objectSet) => {
-  objectSet.forEach((value, key) => {
-    const synonyms = value.synonym || [];
-    if (!objectWords[key]) {
-      objectWords[key] = [];
-    }
-    objectWords[key].push(...[key, ...synonyms]);
-  });
+// [objects, globalObjects, localGlobals].forEach((objectSet) => {
+//   objectSet.forEach((value, key) => {
+//     const synonyms = value.synonym || [];
+//     if (!objectWords[key]) {
+//       objectWords[key] = [];
+//     }
+//     objectWords[key].push(...[key, ...synonyms]);
+//   });
+// });
+
+let objectWords = {
+  localGlobals: {},
+  globalObjects: {},
+  objects: {},
+};
+
+objects.forEach((value, key) => {
+  const synonyms = value.synonym || [];
+  if (!objectWords.objects[key]) {
+    objectWords.objects[key] = [];
+  }
+  objectWords.objects[key].push(...[key, ...synonyms]);
+});
+
+globalObjects.forEach((value, key) => {
+  const synonyms = value.synonym || [];
+  if (!objectWords.globalObjects[key]) {
+    objectWords.globalObjects[key] = [];
+  }
+  objectWords.globalObjects[key].push(...[key, ...synonyms]);
+});
+
+localGlobals.forEach((value, key) => {
+  const synonyms = value.synonym || [];
+  if (!objectWords.localGlobals[key]) {
+    objectWords.localGlobals[key] = [];
+  }
+  objectWords.localGlobals[key].push(...[key, ...synonyms]);
 });
 
 //room defintions
@@ -167,6 +197,4 @@ rooms.set("cellar", {
   flags: ["landbit", "onBit"],
 });
 
-const roomWords = Array.from(rooms.keys());
-
-export { rooms, objects, localGlobals, user, objectWords, roomWords };
+export { rooms, objects, localGlobals, user, objectWords };

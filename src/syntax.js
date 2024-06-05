@@ -1,96 +1,22 @@
-import { objectWords, roomWords } from "./dungeon";
-
-const words = {
-  lookSynonym: "(look|l|stare|gaze)",
-  pourSynonym: "(pour|spill)",
-  takeSynonym: "(take|get|pickup|hold|carry|grab|catch)",
-  dropSynonym: "(drop|putdown|leave)",
-  inventory: "(i|inv|inventory)",
-  brush: "(brush|clean)",
-  chomp: "(chomp|lose|barf)",
-  follow: "(follow|persue|chase|come)",
-  plug: "(plug|glue|patch|repair|fix)",
-  close: "(close|shut)",
-  eat: "(eat|consume|taste|bite)",
-  drink: "(drink|swallow|imbibe)",
+// prettier-ignore
+const dictionary = {
+  objects: ["door", "wooden", "woodendoor", "water", "globalwater", "quantity","bag",
+  "bottle","table","lunch","garlic","leaflet", "booklet", "mail","picture",
+  "trap", "cover", "door", "trap-door", "trapdoor","rug","carpet","floor",
+  "me", "myself", "self", "cretin"],
+  rooms: ["kitchen","corridor","forest","livingroom","cellar"],
+  verbs: ["i","inv","inventory","save","load","verbose","brief","superbrief",
+    "move", "take","get","pickup","hold","carry","grab","catch",
+    "eat","consume","taste","bite","drink","swallow","imbibe","open","close","shut",
+    "back","blast","blowup","bug","chomp","lose","barf","brush","clean",
+    "drop","putdown","leave","follow","persue","chase","come","frobozz","hatch",
+    "lookunder","make","plug","glue","patch","repair","fix",
+    "look","l","stare","gaze","lookwith","lookin","lookunder","lookbehind","lookwith",
+    "lookfor","pour","spill","blow"],
   prepositions: [
-    "the",
-    "at",
-    "in",
-    "from",
-    "on",
-    "under",
-    "inside",
-    "behind",
-    "around",
-    "with",
-    "floor",
-    "blow",
-    "bug",
-    "hatch",
-    "under",
-    "global",
-    "wooden",
-  ],
-  movement: [
-    "n",
-    "e",
-    "s",
-    "w",
-    "d",
-    "north",
-    "east",
-    "south",
-    "west",
-    "up",
-    "down",
-    "make",
-  ],
-  objects: objectWords,
-  rooms: roomWords,
-  getSynonyms() {
-    function collectWords(syn) {
-      return syn.match(/\b\w+\b/g).filter((word) => !/[\(\)\|]/.test(word));
-    }
-    const lookSynonyms = collectWords(this.lookSynonym);
-    const pourSynonyms = collectWords(this.pourSynonym);
-    const takeSynonyms = collectWords(this.takeSynonym);
-    const dropSynonyms = collectWords(this.dropSynonym);
-    const invSynonyms = collectWords(this.inventory);
-    const brushSynonyms = collectWords(this.brush);
-    const chompSynonyms = collectWords(this.chomp);
-    const follow = collectWords(this.follow);
-    const plug = collectWords(this.plug);
-    const eat = collectWords(this.eat);
-    const drink = collectWords(this.drink);
-    return [
-      ...lookSynonyms,
-      ...pourSynonyms,
-      ...takeSynonyms,
-      ...dropSynonyms,
-      ...invSynonyms,
-      ...brushSynonyms,
-      ...chompSynonyms,
-      ...follow,
-      ...plug,
-      ...eat,
-    ];
-  },
-  getVerbs(syntax) {
-    let verbs = [];
-    syntax.forEach((syntaxObj) => {
-      Object.entries(syntaxObj).forEach(([key, value]) => {
-        if (key !== "traversalSyntax") {
-          Object.keys(value).forEach((subKey) => {
-            if (subKey !== "f_reference" && subKey !== "error") {
-              verbs.push(subKey.toLowerCase());
-            }
-          });
-        }
-      });
-    });
-    return verbs;
-  },
+    "the","at","in","from","on","under","inside","behind","around",
+    "with","under","global"],
+  movement: ["n","e","s","w","d","north","east","south","west","up","down","make",],
 };
 
 const reg = function (expression) {
@@ -111,7 +37,7 @@ const syntax = [
   },
   {
     inventorySyntax: {
-      inventory: reg(`${words.inventory}`),
+      inventory: reg(`(i|inv|inventory)`),
       f_reference: "f_inventory",
     },
   },
@@ -143,22 +69,22 @@ const syntax = [
   },
   {
     takeSyntax: {
-      waiting: reg(`${words.takeSynonym}(the)?`),
-      take: reg(`${words.takeSynonym}(the)?(?<object>.*)`),
+      waiting: reg(`(take|get|pickup|hold|carry|grab|catch)(the)?`),
+      take: reg(`(take|get|pickup|hold|carry|grab|catch)(the)?(?<object>.*)`),
       f_reference: "f_take",
     },
   },
   {
     eatSyntax: {
-      waiting: reg(`${words.eat}(the)?`),
-      eat: reg(`${words.eat}(the)?(?<object>.*)`),
+      waiting: reg(`(eat|consume|taste|bite)(the)?`),
+      eat: reg(`(eat|consume|taste|bite)(the)?(?<object>.*)`),
       f_reference: "f_eat",
     },
   },
   {
     drinkSyntax: {
-      waiting: reg(`${words.drink}(the)?`),
-      drink: reg(`${words.drink}(the)?(?<object>.*)`),
+      waiting: reg(`(drink|swallow|imbibe)(the)?`),
+      drink: reg(`(drink|swallow|imbibe)(the)?(?<object>.*)`),
       f_reference: "f_drink",
     },
   },
@@ -172,7 +98,7 @@ const syntax = [
   {
     closeSyntax: {
       waiting: reg(`close`),
-      close: reg(`${words.close}(the)?(?<object>.*)`),
+      close: reg(`(close|shut)(the)?(?<object>.*)`),
       f_reference: "f_close",
     },
   },
@@ -197,7 +123,7 @@ const syntax = [
   },
   {
     chompSyntax: {
-      blast: reg(`${words.chomp}`),
+      blast: reg(`(chomp|lose|barf)`),
       f_reference: "f_chomp",
     },
   },
@@ -205,23 +131,23 @@ const syntax = [
     brushSyntax: {
       waiting: reg(`brush`),
       brushWith: reg(
-        `${words.brush}(?<object>.*)with(the)?(?<indirectObject>.*)`
+        `(brush|clean)(?<object>.*)with(the)?(?<indirectObject>.*)`
       ),
-      brush: reg(`${words.brush}(the)?(?<object>.*)`),
+      brush: reg(`(brush|clean)(the)?(?<object>.*)`),
       f_reference: "f_brush",
     },
   },
   {
     dropSyntax: {
-      waiting: reg(`${words.dropSynonym}(the)?`),
-      drop: reg(`${words.dropSynonym}(the)?(?<object>.*)`),
+      waiting: reg(`(drop|putdown|leave)(the)?`),
+      drop: reg(`(drop|putdown|leave)(the)?(?<object>.*)`),
       f_reference: "f_drop",
     },
   },
   {
     followSyntax: {
-      follow: reg(`${words.follow}`),
-      followThe: reg(`${words.follow}(the)?(?<object>.*)`),
+      follow: reg(`(follow|persue|chase|come)`),
+      followThe: reg(`(follow|persue|chase|come)(the)?(?<object>.*)`),
       f_reference: "f_follow",
     },
   },
@@ -253,37 +179,30 @@ const syntax = [
     },
   },
   {
-    make: {
-      waiting: reg(`make`),
-      makeWith: reg(`make(the)?(?<object>.*)`),
-      f_reference: "f_make",
-    },
-  },
-  {
     plug: {
       waiting: reg(`plug`),
       plugWith: reg(
-        `${words.plug}(the)?(?<object>.*)with(the)?(?<indirectObject>.*)`
+        `(plug|glue|patch|repair|fix)(the)?(?<object>.*)with(the)?(?<indirectObject>.*)`
       ),
-      plug: reg(`${words.plug}(the)?(?<object>.*)`),
+      plug: reg(`(plug|glue|patch|repair|fix)(the)?(?<object>.*)`),
       f_reference: "f_plug",
     },
   },
   {
     lookSyntax: {
       look: reg(`look`),
-      lookAround: reg(`${words.lookSynonym}around(?<object>.*)`),
-      lookUp: reg(`${words.lookSynonym}up(?<object>.*)`),
-      lookDown: reg(`${words.lookSynonym}down(?<object>.*)`),
+      lookAround: reg(`(look|l|stare|gaze)around(?<object>.*)`),
+      lookUp: reg(`(look|l|stare|gaze)up(?<object>.*)`),
+      lookDown: reg(`(look|l|stare|gaze)down(?<object>.*)`),
       f_reference: "f_look",
     },
     lookAtSyntax: {
-      waiting: reg(`${words.lookSynonym}at`),
-      lookAt: reg(`${words.lookSynonym}at(the)?(?<object>.*)`),
+      waiting: reg(`(look|l|stare|gaze)at`),
+      lookAt: reg(`(look|l|stare|gaze)at(the)?(?<object>.*)`),
       f_reference: "f_examine",
     },
     lookOnSyntax: {
-      lookOn: reg(`${words.lookSynonym}on(?<object>.*)`),
+      lookOn: reg(`(look|l|stare|gaze)on(?<object>.*)`),
       f_reference: "f_lookOn",
     },
     lookInSyntax: {
@@ -307,9 +226,9 @@ const syntax = [
   },
   {
     pourSyntax: {
-      pourIn: /^pour(?<object>.*)in(?<indirectObject>.*)$/,
-      pourFrom: /^pour(?<object>.*)from(?<indirectObject>.*)$/,
-      pour: /^pour(?<object>.*)$/,
+      pourIn: /^(pour|spill)(?<object>.*)in(?<indirectObject>.*)$/,
+      pourFrom: /^(pour|spill)(?<object>.*)from(?<indirectObject>.*)$/,
+      pour: /^(pour|spill)(?<object>.*)$/,
       f_reference: "f_pour",
     },
     pourOnSyntax: {
@@ -325,19 +244,4 @@ const syntax = [
   },
 ];
 
-const collectWords = () => {
-  const objectWords = new Set(Object.values(words.objects).flat());
-  const synonymsSet = new Set([
-    ...words.getSynonyms(),
-    ...words.getVerbs(syntax),
-    ...words.prepositions,
-    ...words.movement,
-    ...objectWords,
-    ...words.rooms,
-  ]);
-  return synonymsSet;
-};
-
-const verbs = words.getVerbs(syntax);
-
-export { syntax, collectWords, verbs };
+export { syntax, dictionary };

@@ -1,5 +1,5 @@
 import { verbRoutines } from "./verbs";
-import { objects, rooms, user } from "./dungeon";
+import { objects, globalObjects, rooms, user } from "./dungeon";
 import { sortObjects } from "./parserEngine";
 
 const perform = function (
@@ -15,6 +15,7 @@ const perform = function (
   const indObjectDef = indObject;
   const location = rooms.get(`${user.get("location")}`);
   const verbRoutine = verbRoutines.get(`${reference}`);
+  console.log(objectDef);
 
   if (reference === "f_look") verbRoutine.look(location, levels);
   if (reference === "f_save") verbRoutine.save(objects);
@@ -34,10 +35,8 @@ const perform = function (
   if (reference === "f_drink")
     verbRoutine.drink(objectDef, levels.invObjects.combinedInv);
   if (reference === "f_drop") {
-    console.log(finalLocation);
     verbRoutine.preDrop({
       obj: objectDef,
-      loc: objects.get(`${objectDef.location}`),
       finalLoc: finalLocation[0].finalLocation,
       userLoc: user.get("location"),
     });

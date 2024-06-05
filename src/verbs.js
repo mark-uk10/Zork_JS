@@ -266,7 +266,7 @@ verbRoutines.set("f_save", {
       }
     },
     iDrop: function (context) {
-      const { obj, loc, finalLoc, userLoc } = context;
+      const { obj, finalLoc, userLoc } = context;
       console.log(context);
       if (finalLoc !== "inv") {
         tell(`You're not carrying the ${obj.desc}`);
@@ -304,6 +304,7 @@ verbRoutines.set("f_take", {
       tell(pickOne(yuks));
     } else {
       obj.location = "inv";
+      fSet(obj, "touchBit");
       return true;
     }
   },
