@@ -1,16 +1,22 @@
 function fSet(object, flagToSet) {
-  object.flags.push(flagToSet);
+  if (!object.flags.includes(flagToSet)) {
+    object.flags.push(flagToSet);
+  }
 }
 function fClear(object, flagToClear) {
   const index = object.flags.indexOf(flagToClear);
   object.flags.splice(index, 1);
 }
 function fIsSet(object, flagToCheck) {
+  if (!object) {
+    return false;
+  }
   if (Array.isArray(object)) {
     return object.includes(flagToCheck);
   } else if (typeof object === "object") {
     return object.flags.includes(flagToCheck);
   }
+  return false;
 }
 function isInInv(itemName, invList) {
   return invList.some((item) => item.name === itemName);

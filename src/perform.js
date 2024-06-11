@@ -1,5 +1,5 @@
 import { verbRoutines } from "./verbs";
-import { objects, globalObjects, rooms, user } from "./dungeon";
+import { objects, rooms, user } from "./dungeon";
 import { sortObjects } from "./parserEngine";
 
 const perform = function (
@@ -31,14 +31,25 @@ const perform = function (
   if (reference === "f_take")
     verbRoutine.preTake(objectDef, objects.get(`${objectDef.location}`));
   if (reference === "f_eat")
-    verbRoutine.eat(objectDef, levels.invObjects.combinedInv);
+    verbRoutine.eat(
+      objectDef,
+      levels.invObjects.combinedInv,
+      finalLocation[0].finalLocation,
+      objects.get(`${objectDef.location}`)
+    );
   if (reference === "f_drink")
-    verbRoutine.drink(objectDef, levels.invObjects.combinedInv);
+    verbRoutine.drink(
+      objectDef,
+      levels.invObjects.combinedInv,
+      finalLocation[0].finalLocation,
+      objects.get(`${objectDef.location}`)
+    );
   if (reference === "f_drop") {
     verbRoutine.preDrop({
       obj: objectDef,
       finalLoc: finalLocation[0].finalLocation,
       userLoc: user.get("location"),
+      container: objects.get(`${objectDef.location}`),
     });
   }
   if (reference === "f_back") {

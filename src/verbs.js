@@ -1,6 +1,5 @@
 import { tell } from "./tell";
 import { Global, fSet, fIsSet, pickOne, fClear, isInInv } from "./globals";
-import { user } from "./dungeon";
 
 const yuks = [
   "A valiant attempt.",
@@ -11,6 +10,7 @@ const yuks = [
 ];
 
 const containsSomething = function (container, items) {
+  console.log(items);
   if (!fIsSet(container, "contBit")) {
     return [];
   }
@@ -209,18 +209,18 @@ verbRoutines.set("f_save", {
     },
   }),
   verbRoutines.set("f_drink", {
-    drink: function (obj, invObjects) {
-      verbRoutines.get("f_eat").eat(obj, invObjects, true);
+    drink: function (obj, invObjects, finalLoc, container) {
+      verbRoutines.get("f_eat").eat(obj, invObjects, finalLoc, container, true);
     },
   }),
   verbRoutines.set("f_eat", {
-    eat: function (obj, invObjects, verbDrink) {
-      let food = fIsSet(obj.flags, "foodBit");
+    eat: function (obj, invObjects, finalLoc, container, verbDrink) {
+      let eat = fIsSet(obj.flags, "foodBit");
       let drink = fIsSet(obj.flags, "drinkBit");
-      if (!food && !drink) {
+      if (!eat && !drink) {
         tell(`I don't think that the ${obj.desc} would agree with you.`);
       }
-      if (food) {
+      if (eat) {
         if (!isInInv(obj.name, invObjects)) {
           tell(`You're not holding that`);
         } else if (verbDrink) {
@@ -230,9 +230,18 @@ verbRoutines.set("f_save", {
           obj.location = "false";
         }
       } else if (drink) {
-        //if global water here then drink water
-        // if water is visible and not in iventory say you must be holding the container obj first
-        // if water in inventory but in closed object say you need to open container obj first
+        if (obj.name === "globalwater") {
+          tell(`Thank you very much. I was rather thirsty (from all this talking,
+            probably).`);
+        } else if (finalLoc != "inv") {
+          tell(`You have to be holding the ${container.desc} first.`);
+        } else if (finalLoc === "inv" && !fIsSet(container, "openBit")) {
+          tell(`You'll have to open the ${container.desc} first.`);
+        } else {
+          tell(`Thank you very much. I was rather thirsty (from all this talking,
+            probably).`);
+          obj.location = "false";
+        }
       }
     },
   }),
@@ -257,7 +266,6 @@ verbRoutines.set("f_save", {
   }),
   verbRoutines.set("f_drop", {
     preDrop: function (context) {
-      console.log(context);
       this.drop(context);
     },
     drop: function (context) {
@@ -266,13 +274,17 @@ verbRoutines.set("f_save", {
       }
     },
     iDrop: function (context) {
-      const { obj, finalLoc, userLoc } = context;
-      console.log(context);
+      const { obj, finalLoc, userLoc, container } = context;
+      console.log(container);
       if (finalLoc !== "inv") {
         tell(`You're not carrying the ${obj.desc}`);
         return false;
-      } else if (loc && !fIsSet(loc, "openBit")) {
-        tell(`The ${loc.desc} is closed.`);
+      } else if (
+        finalLoc === "inv" &&
+        container &&
+        !fIsSet(container, "openBit")
+      ) {
+        tell(`The ${container.desc} is closed.`);
         return false;
       } else {
         obj.location = userLoc;
@@ -393,27 +405,35 @@ verbRoutines.set("f_take", {
 
       if (surfaceTxt) {
         tell(surfaceTxt);
-      } else {
+      } else if (
+        containsSomething(object, levels[`lvl${iterate}`]).length &&
+        seeInside(object.flags)
+      ) {
         tell(`The ${object.desc} contains :`);
+        console.log("3");
       }
 
       for (const lvlItemA of startLvl) {
         if (lvlItemA.location === object.name) {
           displayLevel(`A ${lvlItemA.desc}`, "h1");
           if (
-            containsSomething(lvlItemA, levels[`lvl${iterate + 1}`]) &&
+            containsSomething(lvlItemA, levels[`lvl${iterate + 1}`]).length &&
             seeInside(lvlItemA.flags)
           ) {
             displayLevel(`The ${lvlItemA.desc} contains :`, "h1");
+            console.log("1");
             const nextLevelB = levels[`lvl${iterate + 1}`];
             for (const lvlItemB of nextLevelB) {
               if (lvlItemB.location === lvlItemA.name) {
                 displayLevel(`A ${lvlItemB.desc}`, "h2");
+
                 if (
-                  containsSomething(lvlItemB, levels[`lvl${iterate + 2}`]) &&
+                  containsSomething(lvlItemB, levels[`lvl${iterate + 2}`])
+                    .length &&
                   seeInside(lvlItemB.flags)
                 ) {
                   displayLevel(`The ${lvlItemB.desc} contains :`, "h2");
+                  console.log("2");
                   const nextLevelC = levels[`lvl${iterate + 2}`];
                   for (const lvlItemC of nextLevelC) {
                     if (lvlItemC.location === lvlItemB.name) {

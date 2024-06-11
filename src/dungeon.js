@@ -1,5 +1,5 @@
 import { room, traversal, object } from "./actions.js";
-import { getGFlags, globalObjects } from "./globals.js";
+import { globalObjects } from "./globals.js";
 
 const user = new Map();
 user.set("location", "kitchen");
@@ -31,7 +31,7 @@ objects.set("water", {
 });
 objects.set("bag", {
   name: "bag",
-  location: "table",
+  location: "kitchen",
   fDesc: "on the table is an elongated brown sack smelling of hot peppers",
   desc: "brown sack",
   flags: ["takeBit", "contBit", "burnBit"],
@@ -39,11 +39,11 @@ objects.set("bag", {
 });
 objects.set("bottle", {
   name: "bottle",
-  location: "inv",
+  location: "bag",
   desc: "glass bottle",
   fDesc: "A bottle is sitting on the table",
   lDesc: "A clear glass bottle is here",
-  flags: ["takeBit", "transBit", "contBit"],
+  flags: ["takeBit", "transBit", "contBit", "touchBit"],
   capacity: 1,
 });
 objects.set("table", {
@@ -101,18 +101,6 @@ objects.set("rug", {
   flags: ["noDescBit", "tryTakeBit"],
   objectRoutine: (txt, item, items) => object.f_rug(txt, item, items),
 });
-
-//const objectWords = {};
-
-// [objects, globalObjects, localGlobals].forEach((objectSet) => {
-//   objectSet.forEach((value, key) => {
-//     const synonyms = value.synonym || [];
-//     if (!objectWords[key]) {
-//       objectWords[key] = [];
-//     }
-//     objectWords[key].push(...[key, ...synonyms]);
-//   });
-// });
 
 let objectWords = {
   localGlobals: {},
