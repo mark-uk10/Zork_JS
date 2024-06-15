@@ -108,6 +108,9 @@ const perform = function (
       verbRoutines.get("f_look").firstLook(newLocation, newObjects);
     }
   }
+  if (reference === "f_putIn") {
+    verbRoutine.putIn(objectDef, indObjectDef, finalLocation[0].finalLocation);
+  }
 };
 
 export { perform };

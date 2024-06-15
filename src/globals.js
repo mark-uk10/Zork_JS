@@ -8,15 +8,11 @@ function fClear(object, flagToClear) {
   object.flags.splice(index, 1);
 }
 function fIsSet(object, flagToCheck) {
-  if (!object) {
-    return false;
-  }
   if (Array.isArray(object)) {
     return object.includes(flagToCheck);
   } else if (typeof object === "object") {
     return object.flags.includes(flagToCheck);
   }
-  return false;
 }
 function isInInv(itemName, invList) {
   return invList.some((item) => item.name === itemName);

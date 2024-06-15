@@ -12,7 +12,7 @@ const dictionary = {
     "drop","putdown","leave","follow","persue","chase","come","frobozz","hatch",
     "lookunder","make","plug","glue","patch","repair","fix",
     "look","l","stare","gaze","lookwith","lookin","lookunder","lookbehind","lookwith",
-    "lookfor","pour","spill","blow"],
+    "lookfor","pour","spill","blow","put"],
   prepositions: [
     "the","at","in","from","on","under","inside","behind","around",
     "with","under","global"],
@@ -204,6 +204,10 @@ const syntax = [
     lookOnSyntax: {
       lookOn: reg(`(look|l|stare|gaze)on(?<object>.*)`),
       f_reference: "f_lookOn",
+    },
+    putInSyntax: {
+      putIn: reg(`(put)(?<object>.*)in(?<indirectObject>.*)`),
+      f_reference: "f_putIn",
     },
     lookInSyntax: {
       waiting: reg(`lookwith|lookin`),

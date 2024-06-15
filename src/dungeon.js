@@ -34,7 +34,7 @@ objects.set("bag", {
   location: "kitchen",
   fDesc: "on the table is an elongated brown sack smelling of hot peppers",
   desc: "brown sack",
-  flags: ["takeBit", "contBit", "burnBit"],
+  flags: ["takeBit", "contBit", "burnBit", "openBit", "touchBit"],
   capacity: 1,
 });
 objects.set("bottle", {
@@ -51,11 +51,12 @@ objects.set("table", {
   location: "kitchen",
   desc: "kitchen table",
   flags: ["contBit", "surfaceBit", "openBit", "noDescBit"],
+  capacity: 99,
 });
 
 objects.set("lunch", {
   name: "lunch",
-  location: "bag",
+  location: "kitchen",
   desc: "lunch",
   flags: ["takeBit", "foodBit"],
 });

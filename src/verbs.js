@@ -10,7 +10,6 @@ const yuks = [
 ];
 
 const containsSomething = function (container, items) {
-  console.log(items);
   if (!fIsSet(container, "contBit")) {
     return [];
   }
@@ -321,82 +320,93 @@ verbRoutines.set("f_take", {
     }
   },
 }),
-  verbRoutines.set("f_examine", {
-    examine: function (object, allObjects) {
-      if ("text" in object) {
-        tell(object.text);
-      } else if (
-        object.flags.includes("contBit") ||
-        object.flags.includes("doorBit")
-      ) {
-        this.lookInside(object, allObjects);
-      } else {
-        tell(`There's nothing special about the ${object.desc}`);
+  verbRoutines.set("f_putIn", {
+    putIn: function (obj, indObj, finalLoc) {
+      if (finalLoc != "inv") {
+        tell(`You don't have the ${obj.desc}.`);
+      } else if (!indObj.hasOwnProperty("capacity")) {
+        tell("You can't do that.");
+      } else if (!fIsSet(indObj, "openBit")) {
+        tell(`The ${indObj.desc} isn't open.`);
+      } else if (obj.location === indObj.name) {
+        tell(`The ${obj.desc} is already in the ${indObj.desc} `);
       }
     },
-    lookInside: function (object, allObjects) {
-      console.log(allObjects);
-      console.log(object);
-      function findLevelNumberByName(levels, name) {
-        for (const [levelKey, objects] of Object.entries(levels)) {
-          if (objects.some((obj) => obj.name === name)) {
-            return parseInt(levelKey.replace("lvl", ""), 10) + 1; // Adjust to 1-based indexing
-          }
+  });
+verbRoutines.set("f_examine", {
+  examine: function (object, allObjects) {
+    if ("text" in object) {
+      tell(object.text);
+    } else if (
+      object.flags.includes("contBit") ||
+      object.flags.includes("doorBit")
+    ) {
+      this.lookInside(object, allObjects);
+    } else {
+      tell(`There's nothing special about the ${object.desc}`);
+    }
+  },
+  lookInside: function (object, allObjects) {
+    console.log(allObjects);
+    console.log(object);
+    function findLevelNumberByName(levels, name) {
+      for (const [levelKey, objects] of Object.entries(levels)) {
+        if (objects.some((obj) => obj.name === name)) {
+          return parseInt(levelKey.replace("lvl", ""), 10) + 1; // Adjust to 1-based indexing
         }
-        return null; // Object not found
       }
+      return null; // Object not found
+    }
 
-      function levels() {
-        if (object.location === "inv")
-          return {
-            lvl0: allObjects.invObjects.lvl0,
-            lvl1: allObjects.invObjects.lvl1,
-            lvl2: allObjects.invObjects.lvl2,
-          };
-        else
-          return {
-            lvl0: allObjects.roomObjects,
-            lvl1: allObjects.objectsLevel1,
-            lvl2: allObjects.objectsLevel2,
-            lvl3: allObjects.objectsLevel3,
-          };
-      }
+    function levels() {
+      if (object.location === "inv")
+        return {
+          lvl0: allObjects.invObjects.lvl0,
+          lvl1: allObjects.invObjects.lvl1,
+          lvl2: allObjects.invObjects.lvl2,
+        };
+      else
+        return {
+          lvl0: allObjects.roomObjects,
+          lvl1: allObjects.objectsLevel1,
+          lvl2: allObjects.objectsLevel2,
+          lvl3: allObjects.objectsLevel3,
+        };
+    }
 
-      if (object.flags.includes("doorBit")) {
-        if (object.flags.includes("openBit"))
-          tell(
-            `The ${object.desc} is open, but I can't tell what's beyond it.`
-          );
-        else tell(`The ${object.desc} is closed.`);
-      } else if (object.flags.includes("contBit")) {
-        if (object.flags.includes("surfaceBit")) {
+    if (object.flags.includes("doorBit")) {
+      if (object.flags.includes("openBit"))
+        tell(`The ${object.desc} is open, but I can't tell what's beyond it.`);
+      else tell(`The ${object.desc} is closed.`);
+    } else if (object.flags.includes("contBit")) {
+      if (object.flags.includes("surfaceBit")) {
+        if (containsSomething(object, allObjects.combinedObjects)) {
+          verbRoutines
+            .get("f_look")
+            .containment(
+              object,
+              allObjects.objectsLevel1,
+              1,
+              levels(),
+              `on the ${object.desc} is :`
+            );
+        } else tell(`There is nothing on the ${object.desc}`);
+      } else {
+        if (seeInside(object.flags)) {
           if (containsSomething(object, allObjects.combinedObjects)) {
+            const filteredItems = allObjects.combinedObjects.filter(
+              (item) => item.location === object.name
+            );
+            const startLvl = findLevelNumberByName(levels(), object.name);
             verbRoutines
               .get("f_look")
-              .containment(
-                object,
-                allObjects.objectsLevel1,
-                1,
-                levels(),
-                `on the ${object.desc} is :`
-              );
-          } else tell(`There is nothing on the ${object.desc}`);
-        } else {
-          if (seeInside(object.flags)) {
-            if (containsSomething(object, allObjects.combinedObjects)) {
-              const filteredItems = allObjects.combinedObjects.filter(
-                (item) => item.location === object.name
-              );
-              const startLvl = findLevelNumberByName(levels(), object.name);
-              verbRoutines
-                .get("f_look")
-                .containment(object, filteredItems, startLvl, levels());
-            } else tell(`The ${object.desc} is empty`);
-          } else tell(`The ${object.desc} is closed`);
-        }
-      } else tell(`You can't look inside a ${object.desc}`);
-    },
-  }),
+              .containment(object, filteredItems, startLvl, levels());
+          } else tell(`The ${object.desc} is empty`);
+        } else tell(`The ${object.desc} is closed`);
+      }
+    } else tell(`You can't look inside a ${object.desc}`);
+  },
+}),
   verbRoutines.set("f_look", {
     containment: function (object, startLvl, iterate, levels, surfaceTxt) {
       const displayLevel = function (toDisplay, element) {
