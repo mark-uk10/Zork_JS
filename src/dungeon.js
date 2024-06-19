@@ -35,15 +35,16 @@ objects.set("bag", {
   fDesc: "on the table is an elongated brown sack smelling of hot peppers",
   desc: "brown sack",
   flags: ["takeBit", "contBit", "burnBit", "openBit", "touchBit"],
-  capacity: 1,
+  capacity: 9,
+  size: 9,
 });
 objects.set("bottle", {
   name: "bottle",
-  location: "bag",
+  location: "table",
   desc: "glass bottle",
   fDesc: "A bottle is sitting on the table",
   lDesc: "A clear glass bottle is here",
-  flags: ["takeBit", "transBit", "contBit", "touchBit"],
+  flags: ["takeBit", "transBit", "contBit"],
   capacity: 1,
 });
 objects.set("table", {
@@ -65,6 +66,7 @@ objects.set("garlic", {
   location: "bag",
   desc: "clove of garlic",
   flags: ["takeBit", "foodBit"],
+  size: 4,
 });
 objects.set("leaflet", {
   name: "leaflet",

@@ -287,6 +287,9 @@ verbRoutines.set("f_save", {
         return false;
       } else {
         obj.location = userLoc;
+        if (container && container.capacity) {
+          container.capacity = container.capacity + obj.size;
+        }
         return true;
       }
     },
@@ -299,25 +302,29 @@ verbRoutines.set("f_take", {
     } else {
       if (fIsSet(loc, "contBit") && !fIsSet(loc, "openBit"))
         tell("You can't reach something that's inside a closed container.");
-      else this.take(obj);
+      else this.take(obj, loc);
     }
   },
-  take: function (obj) {
-    if (this.iTake(obj)) {
+  take: function (obj, loc) {
+    if (this.iTake(obj, loc)) {
       if (fIsSet(obj.flags, "wearBit")) {
         tell(`You are now wearing the ${obj.desc}`);
       } else tell("taken");
     }
   },
-  iTake: function (obj) {
+  iTake: function (obj, loc) {
     //use this function for weight limits capacity limits any special effects for global vars involving take
     if (!fIsSet(obj, "takeBit")) {
       tell(pickOne(yuks));
-    } else {
-      obj.location = "inv";
-      fSet(obj, "touchBit");
-      return true;
     }
+    if (loc) {
+      if (loc.capacity) {
+        loc.capacity = loc.capacity - obj.size || 5;
+      }
+    }
+    obj.location = "inv";
+    fSet(obj, "touchBit");
+    return true;
   },
 }),
   verbRoutines.set("f_putIn", {
@@ -330,6 +337,17 @@ verbRoutines.set("f_take", {
         tell(`The ${indObj.desc} isn't open.`);
       } else if (obj.location === indObj.name) {
         tell(`The ${obj.desc} is already in the ${indObj.desc} `);
+      } else {
+        const objSize = obj.size || 5;
+        const indCapacity = indObj.capacity;
+
+        if (objSize > indCapacity) {
+          tell("There's no room.");
+        } else {
+          indObj.capacity = indObj.capacity - objSize;
+          obj.location = indObj.name;
+          tell("Done.");
+        }
       }
     },
   });
