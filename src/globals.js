@@ -1,3 +1,15 @@
+const gExitFlags = {
+  CYCLOPSFLAG: [],
+  LOWTIDE: ["corridor"],
+};
+
+const Global = {
+  rugMoved: false,
+  verbose: false,
+  superBrief: false,
+  yucksArray: [],
+};
+
 function fSet(object, flagToSet) {
   if (!object.flags.includes(flagToSet)) {
     object.flags.push(flagToSet);
@@ -22,9 +34,17 @@ function setG(thing, bool) {
   Global[thing] = bool;
 }
 
-function pickOne(list) {
-  const index = Math.floor(Math.random() * list.length);
-  return list[index];
+function pickOne(fixedArray) {
+  function resetRandomArray(fixedArray) {
+    Global.yucksArray = [...fixedArray];
+    Global.yucksArray = Global.yucksArray.sort(() => Math.random() - 0.5);
+  }
+  if (Global.yucksArray.length === 0) {
+    resetRandomArray(fixedArray);
+  }
+  const randomIndex = Math.floor(Math.random() * Global.yucksArray.length);
+  const removedItem = Global.yucksArray.splice(randomIndex, 1);
+  return removedItem;
 }
 
 const globalObjects = new Map();
@@ -43,17 +63,6 @@ globalObjects.set("me", {
   synonym: ["me", "myself", "self", "cretin"],
   flags: ["noDescBit"],
 });
-
-const gExitFlags = {
-  CYCLOPSFLAG: [],
-  LOWTIDE: ["corridor"],
-};
-
-const Global = {
-  rugMoved: false,
-  verbose: false,
-  superBrief: false,
-};
 
 function getGFlags(location, searchFlag) {
   return function () {

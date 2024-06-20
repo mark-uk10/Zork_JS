@@ -19,15 +19,6 @@ const containsSomething = function (container, items) {
   });
 };
 
-// const containsSomething = function (container, contained) {
-//   if (!fIsSet(container, "contBit")) {
-//     return false;
-//   }
-//   return contained.some((item) => {
-//     return item.location === container.name;
-//   });
-// };
-
 function seeInside(obj) {
   return (
     !obj.includes("invisible") &&
@@ -316,15 +307,16 @@ verbRoutines.set("f_take", {
     //use this function for weight limits capacity limits any special effects for global vars involving take
     if (!fIsSet(obj, "takeBit")) {
       tell(pickOne(yuks));
-    }
-    if (loc) {
-      if (loc.capacity) {
-        loc.capacity = loc.capacity - obj.size || 5;
+    } else {
+      if (loc) {
+        if (loc.capacity) {
+          loc.capacity = loc.capacity - obj.size || 5;
+        }
       }
+      obj.location = "inv";
+      fSet(obj, "touchBit");
+      return true;
     }
-    obj.location = "inv";
-    fSet(obj, "touchBit");
-    return true;
   },
 }),
   verbRoutines.set("f_putIn", {
