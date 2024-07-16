@@ -305,7 +305,7 @@ const evaluateInput = function (input) {
   } else if (unknownWord) {
     tell(`I don't know the word ${unknownWord}`);
   } else if (correctSyntax.f_reference === "f_error") {
-    tell("I do not undetstand that");
+    tell("I do not undetstanddd that");
   } else if (correctSyntax.isMatchFound && correctSyntax.verb === "waiting") {
     tell(`What do you want to ${correctSyntax.object[0]}?`);
   } else if (

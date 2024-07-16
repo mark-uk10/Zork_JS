@@ -206,6 +206,7 @@ const syntax = [
       f_reference: "f_lookOn",
     },
     putInSyntax: {
+      waiting: reg(`(put)`),
       putIn: reg(`(put)(?<object>.*)in(?<indirectObject>.*)`),
       f_reference: "f_putIn",
     },

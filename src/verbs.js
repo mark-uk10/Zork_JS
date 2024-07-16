@@ -330,6 +330,10 @@ verbRoutines.set("f_take", {
 }),
   verbRoutines.set("f_putIn", {
     putIn: function (obj, indObj, finalLoc) {
+      if (!indObj) {
+        tell(`what do you want to put ${obj.desc} in?`);
+        return;
+      }
       if (finalLoc != "inv") {
         tell(`You don't have the ${obj.desc}.`);
       } else if (!indObj.hasOwnProperty("capacity")) {
