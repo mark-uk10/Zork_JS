@@ -316,15 +316,16 @@ verbRoutines.set("f_take", {
     //use this function for weight limits capacity limits any special effects for global vars involving take
     if (!fIsSet(obj, "takeBit")) {
       tell(pickOne(yuks));
-    }
-    if (loc) {
-      if (loc.capacity) {
-        loc.capacity = loc.capacity - obj.size || 5;
+    } else {
+      if (loc) {
+        if (loc.capacity) {
+          loc.capacity = loc.capacity - obj.size || 5;
+        }
       }
+      obj.location = "inv";
+      fSet(obj, "touchBit");
+      return true;
     }
-    obj.location = "inv";
-    fSet(obj, "touchBit");
-    return true;
   },
 }),
   verbRoutines.set("f_putIn", {

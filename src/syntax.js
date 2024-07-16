@@ -16,7 +16,7 @@ const dictionary = {
   prepositions: [
     "the","at","in","from","on","under","inside","behind","around",
     "with","under","global"],
-  movement: ["n","e","s","w","d","north","east","south","west","up","down","make",],
+  movement: ["n","e","s","w","d","north","east","south","west","up","down"],
 };
 
 const reg = function (expression) {
