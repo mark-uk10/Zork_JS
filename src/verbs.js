@@ -9,14 +9,9 @@ const yuks = [
   "What a concept!",
 ];
 
-const containsSomething = function (container, items) {
-  if (!fIsSet(container, "contBit")) {
-    return [];
-  }
-
-  return items.filter((item) => {
-    return item.location === container.name;
-  });
+const containsSomething = (container, items) => {
+  const returnArray = items.filter((item) => item.location === container.name);
+  return returnArray.length ? returnArray : false;
 };
 
 // const containsSomething = function (container, contained) {
@@ -129,6 +124,11 @@ verbRoutines.set("f_save", {
   verbRoutines.set("f_lookUnder", {
     lookUnder: function () {
       tell("There is nothing but dust there.");
+    },
+  }),
+  verbRoutines.set("f_lookBehind", {
+    lookBehind: function (object) {
+      tell(`There is nothing behind the ${object.desc}`);
     },
   }),
   verbRoutines.set("f_make", {
@@ -356,6 +356,7 @@ verbRoutines.set("f_take", {
       }
     },
   });
+
 verbRoutines.set("f_examine", {
   examine: function (object, allObjects) {
     if ("text" in object) {
@@ -416,6 +417,8 @@ verbRoutines.set("f_examine", {
         } else tell(`There is nothing on the ${object.desc}`);
       } else {
         if (seeInside(object.flags)) {
+          const test = containsSomething(object, allObjects.combinedObjects);
+          console.log(test);
           if (containsSomething(object, allObjects.combinedObjects)) {
             const filteredItems = allObjects.combinedObjects.filter(
               (item) => item.location === object.name
@@ -430,6 +433,19 @@ verbRoutines.set("f_examine", {
     } else tell(`You can't look inside a ${object.desc}`);
   },
 }),
+  verbRoutines.set("f_lookOn", {
+    lookOn: function (objectDef, levels) {
+      if (fIsSet(objectDef, "surfaceBit")) {
+        verbRoutines.get("f_examine").lookInside(objectDef, levels);
+      } else tell(`Look on a ${objectDef.desc} ???`);
+    },
+  }),
+  verbRoutines.set("f_lookInside", {
+    lookInside: function (objectDef, levels) {
+      console.log("look inside");
+      verbRoutines.get("f_examine").lookInside(objectDef, levels);
+    },
+  }),
   verbRoutines.set("f_look", {
     containment: function (object, startLvl, iterate, levels, surfaceTxt) {
       const displayLevel = function (toDisplay, element) {

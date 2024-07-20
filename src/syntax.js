@@ -10,12 +10,12 @@ const dictionary = {
     "eat","consume","taste","bite","drink","swallow","imbibe","open","close","shut",
     "back","blast","blowup","bug","chomp","lose","barf","brush","clean",
     "drop","putdown","leave","follow","persue","chase","come","frobozz","hatch",
-    "lookunder","make","plug","glue","patch","repair","fix",
-    "look","l","stare","gaze","lookwith","lookin","lookunder","lookbehind","lookwith",
-    "lookfor","pour","spill","blow","put"],
+    "make","plug","glue","patch","repair","fix",
+    "look","l","stare","gaze","with","in","under","behind","with",
+    "pour","spill","blow","put","examine","find","search","seek","see"],
   prepositions: [
     "the","at","in","from","on","under","inside","behind","around",
-    "with","under","global"],
+    "with","under","global","into","for","where"],
   movement: ["n","e","s","w","d","north","east","south","west","up","down"],
 };
 
@@ -165,13 +165,6 @@ const syntax = [
     },
   },
   {
-    lookUnder: {
-      waiting: reg(`lookunder`),
-      lookUnderWith: reg(`lookunder(the)?(?<object>.*)`),
-      f_reference: "f_lookUnder",
-    },
-  },
-  {
     make: {
       waiting: reg(`make`),
       makeWith: reg(`make(the)?(?<object>.*)`),
@@ -188,9 +181,11 @@ const syntax = [
       f_reference: "f_plug",
     },
   },
+
+  ///////////////////LOOK VERBS///////////////////
   {
     lookSyntax: {
-      look: reg(`look`),
+      look: reg(`(look|l|stare|gaze)(around)?(up)?(down)?`),
       lookAround: reg(`(look|l|stare|gaze)around(?<object>.*)`),
       lookUp: reg(`(look|l|stare|gaze)up(?<object>.*)`),
       lookDown: reg(`(look|l|stare|gaze)down(?<object>.*)`),
@@ -199,34 +194,42 @@ const syntax = [
     lookAtSyntax: {
       waiting: reg(`(look|l|stare|gaze)at`),
       lookAt: reg(`(look|l|stare|gaze)at(the)?(?<object>.*)`),
+      examine: reg(`examine(?<object>.*)`),
       f_reference: "f_examine",
     },
     lookOnSyntax: {
       lookOn: reg(`(look|l|stare|gaze)on(?<object>.*)`),
       f_reference: "f_lookOn",
     },
+    lookUnderSyntax: {
+      lookUnder: reg(`(look|l|stare|gaze)under(?<object>.*)`),
+      f_reference: "f_lookUnder",
+    },
+    lookBehindSyntax: {
+      lookBehind: reg(`(look|l|stare|gaze)behind(?<object>.*)`),
+      f_reference: "f_lookBehind",
+    },
+    lookInsideSyntax: {
+      lookInside: reg(`(look|l|stare|gaze)inside(?<object>.*)`),
+      lookIn: reg(`(look|l|stare|gaze)in(?<object>.*)`),
+      lookWith: reg(`(look|l|stare|gaze)with(?<object>.*)`),
+      f_reference: "f_lookInside",
+    },
+    LookForSyntax: {
+      lookFor: reg(`(lookfor|find|searchfor|where|seek|see)(?<object>.*)`),
+      f_reference: "f_find",
+    },
+    searchSyntax: {
+      searchFor: reg(`search(in)?(?<object>.*)`),
+      f_reference: "f_search",
+    },
+
+    ////////////////////end of look verbs ///////////////////////
+
     putInSyntax: {
       waiting: reg(`(put)`),
       putIn: reg(`(put)(?<object>.*)in(?<indirectObject>.*)`),
       f_reference: "f_putIn",
-    },
-    lookInSyntax: {
-      waiting: reg(`lookwith|lookin`),
-      lookWith: /^lookwith(?<object>.*)$/,
-      lookIn: /^lookin(?<object>.*)$/,
-      f_reference: "f_lookInside",
-    },
-    lookUnderSyntax: {
-      lookUnder: /^lookunder(?<object>.*)$/,
-      f_reference: "f_lookUnder",
-    },
-    lookBehindSyntax: {
-      lookBehind: /^lookbehind(?<object>.*)$/,
-      f_reference: "f_lookBehind",
-    },
-    lookForSyntax: {
-      find: /^lookfor(?<object>.*)$/,
-      f_reference: "f_find",
     },
   },
   {
