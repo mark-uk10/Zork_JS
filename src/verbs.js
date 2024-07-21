@@ -446,6 +446,38 @@ verbRoutines.set("f_examine", {
       verbRoutines.get("f_examine").lookInside(objectDef, levels);
     },
   }),
+  verbRoutines.set("f_search", {
+    search: function () {
+      tell("You find nothing unusual.");
+    },
+  }),
+  verbRoutines.set("f_find", {
+    find: function (object, userLoc, objContainer) {
+      if (object.name === "hands" || object.name === "lungs") {
+        tell(
+          "Within six feet of your head, assuming you haven't left that somewhere."
+        );
+      } else if (object.name === "me") {
+        tell("You're around here somewhere...");
+      } else if (object.location === "globalObjects") {
+        tell("You find it.");
+      } else if (object.location === "inv") {
+        tell("You have it");
+      } else if (object.location === userLoc.name) {
+        tell("It's right here");
+      } else if (
+        object.location === objContainer.name &&
+        fIsSet(objContainer, "surfaceBit")
+      ) {
+        tell(`It's on the ${objContainer.desc}`);
+      } else if (
+        object.location === objContainer.name &&
+        fIsSet(objContainer, "contBit")
+      ) {
+        tell(`It's in the ${objContainer.desc}`);
+      }
+    },
+  }),
   verbRoutines.set("f_look", {
     containment: function (object, startLvl, iterate, levels, surfaceTxt) {
       const displayLevel = function (toDisplay, element) {

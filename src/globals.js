@@ -43,6 +43,21 @@ globalObjects.set("me", {
   synonym: ["me", "myself", "self", "cretin"],
   flags: ["noDescBit"],
 });
+globalObjects.set("lungs", {
+  name: "lungs",
+  location: "globalObjects",
+  desc: "blast of air",
+  synonym: ["lungs", "air", "mouth", "breath"],
+  flags: ["noDescBit"],
+});
+globalObjects.set("hands", {
+  name: "hands",
+  location: "globalObjects",
+  desc: "pair of hands",
+  adjective: "bare",
+  synonym: ["pair", "hands", "hand"],
+  flags: ["noDescBit", "toolBit"],
+});
 
 const gExitFlags = {
   CYCLOPSFLAG: [],

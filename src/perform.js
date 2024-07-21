@@ -21,6 +21,9 @@ const perform = function (
   if (reference === "f_lookOn") verbRoutine.lookOn(objectDef, levels);
   if (reference === "f_lookInside") verbRoutine.lookInside(objectDef, levels);
   if (reference === "f_lookBehind") verbRoutine.lookBehind(objectDef);
+  if (reference === "f_search") verbRoutine.search();
+  if (reference === "f_find")
+    verbRoutine.find(objectDef, location, objects.get(`${objectDef.location}`));
   if (reference === "f_save") verbRoutine.save(objects);
   if (reference === "f_load") verbRoutine.load(objects);
   if (reference === "f_examine") verbRoutine.examine(objectDef, levels);

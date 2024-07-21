@@ -3,7 +3,8 @@ const dictionary = {
   objects: ["door", "wooden", "woodendoor", "water", "globalwater", "quantity","bag",
   "bottle","table","lunch","garlic","leaflet", "booklet", "mail","picture",
   "trap", "cover", "door", "trap-door", "trapdoor","rug","carpet","floor",
-  "me", "myself", "self", "cretin"],
+  "me", "myself", "self", "cretin", "pair", "hands", "hand",
+  "lungs", "air", "mouth", "breath"],
   rooms: ["kitchen","corridor","forest","livingroom","cellar"],
   verbs: ["i","inv","inventory","save","load","verbose","brief","superbrief",
     "move", "take","get","pickup","hold","carry","grab","catch",
@@ -21,6 +22,10 @@ const dictionary = {
 
 const reg = function (expression) {
   return new RegExp(`^${expression}$`);
+};
+
+const synonyms = {
+  invenory: ["i", "inv", "inventory"],
 };
 
 const syntax = [
@@ -216,7 +221,9 @@ const syntax = [
       f_reference: "f_lookInside",
     },
     LookForSyntax: {
-      lookFor: reg(`(lookfor|find|searchfor|where|seek|see)(?<object>.*)`),
+      lookFor: reg(
+        `(lookfor|find|searchfor|where|seek|see)(the)?(?<object>.*)`
+      ),
       f_reference: "f_find",
     },
     searchSyntax: {
